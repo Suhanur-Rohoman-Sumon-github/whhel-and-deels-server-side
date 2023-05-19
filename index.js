@@ -78,8 +78,8 @@ async function run() {
         }
         app.get('/mytoyes',async(req,res)=>{
             let query = {};
-            if (req.query?.name) {
-                query = { name: req.query.name }
+            if (req.query?.email) {
+                query = { name: req.query.email}
             }
             const cursor = mytoyes.find(query)
             const result = await cursor.toArray();
@@ -90,8 +90,9 @@ async function run() {
             const newToyes = await mytoyes.insertOne(addedToyes)
             res.send(newToyes)
         })
-        app.delete('/alltoyes/:id', async (req, res) => {
+        app.delete('/mytoyes/:id', async (req, res) => {
             const id = req.params.id
+            console.log(id)
             const query = { _id: new ObjectId(id) }
             const result = await mytoyes.deleteOne(query)
             res.send(result)
