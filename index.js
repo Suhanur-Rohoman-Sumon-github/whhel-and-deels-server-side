@@ -4,6 +4,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 
 app.use(cors())
+app.use(express.json())
 
 const port = process.env.PORT || 5001;
 
@@ -28,15 +29,10 @@ async function run() {
         const cars = client.db('toyWorld').collection('cars')
         const truks = client.db('toyWorld').collection('truks')
         const police = client.db('toyWorld').collection('police')
-        const alltoyes = client.db('toyWorld').collection('toys')
+        const mytoyes = client.db('toyWorld').collection('myToyes')
 
         app.get('/gelary',async(req,res)=>{
             const cursor = toyes.find()
-            const result = await cursor.toArray()
-            res.send(result)
-        })
-        app.get('/alltoyes',async(req,res)=>{
-            const cursor = alltoyes.find()
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -71,6 +67,33 @@ async function run() {
             const id = req.params.id
             const query = {_id: new ObjectId(id)}
             const result = await police.findOne(query)
+            res.send(result)
+        })
+        app.get('/mytoyes/:id'),async(req,res)=>{
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            console.log(query)
+            const result = await mytoyes.findOne(query)
+            res.send(result)
+        }
+        app.get('/mytoyes',async(req,res)=>{
+            let query = {};
+            if (req.query?.name) {
+                query = { name: req.query.name }
+            }
+            const cursor = mytoyes.find(query)
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+        app.post('/mytoyes',async(req,res)=>{
+            const addedToyes = req.body
+            const newToyes = await mytoyes.insertOne(addedToyes)
+            res.send(newToyes)
+        })
+        app.delete('/alltoyes/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await mytoyes.deleteOne(query)
             res.send(result)
         })
 
