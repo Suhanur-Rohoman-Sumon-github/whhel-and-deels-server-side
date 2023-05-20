@@ -31,68 +31,76 @@ async function run() {
         const police = client.db('toyWorld').collection('police')
         const mytoyes = client.db('toyWorld').collection('myToyes')
 
-        app.get('/gelary',async(req,res)=>{
+        app.get('/gelary', async (req, res) => {
             const cursor = toyes.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        app.get('/cars',async(req,res)=>{
+        app.get('/cars', async (req, res) => {
             const cursor = cars.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        app.get('/cars/:id',async(req,res)=>{
+        app.get('/cars/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await cars.findOne(query)
             res.send(result)
         })
-        app.get('/truks',async(req,res)=>{
+        app.get('/truks', async (req, res) => {
             const cursor = truks.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        app.get('/truks/:id',async(req,res)=>{
+        app.get('/truks/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await truks.findOne(query)
             res.send(result)
         })
-        app.get('/police',async(req,res)=>{
+        app.get('/police', async (req, res) => {
             const cursor = police.find()
             const result = await cursor.toArray()
             res.send(result)
         })
-        app.get('/police/:id',async(req,res)=>{
+        app.get('/police/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await police.findOne(query)
             res.send(result)
         })
-        app.get('/mytoyes/:id'),async(req,res)=>{
+        app.get('/mytoyes/:id'), async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             console.log(query)
             const result = await mytoyes.findOne(query)
             res.send(result)
         }
-        app.get('/mytoyes',async(req,res)=>{
+        app.get('/mytoyes', async (req, res) => {
             let query = {};
+            const sort = req?.query?.sort == 'true' ? 1 : -1;
             if (req.query?.email) {
-                query = { name: req.query.email}
+                query = { name: req.query.email }
             }
-            const cursor = mytoyes.find(query)
+            
+            const cursor = mytoyes.find(query).sort({ price: sort })
             const result = await cursor.toArray();
             res.send(result)
-        })
-        app.post('/mytoyes',async(req,res)=>{
+        }
+
+        )
+
+
+
+
+
+        app.post('/mytoyes', async (req, res) => {
             const addedToyes = req.body
             const newToyes = await mytoyes.insertOne(addedToyes)
             res.send(newToyes)
         })
         app.delete('/mytoyes/:id', async (req, res) => {
             const id = req.params.id
-            console.log(id)
             const query = { _id: new ObjectId(id) }
             const result = await mytoyes.deleteOne(query)
             res.send(result)
