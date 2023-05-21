@@ -75,7 +75,6 @@ async function run() {
         app.get('/mytoyes/:id'), async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
-            console.log(query)
             const result = await mytoyes.findOne(query)
             res.send(result)
         }
@@ -115,6 +114,12 @@ async function run() {
           res.send(result)
         })
         app.delete('/mytoyes/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await mytoyes.deleteOne(query)
+            res.send(result)
+        })
+        app.get('/alltoyes/myToyes/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             const result = await mytoyes.deleteOne(query)
