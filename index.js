@@ -3,14 +3,17 @@ const cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 
+
 app.use(cors())
 app.use(express.json())
 
+
 const port = process.env.PORT || 5001;
+require('dotenv').config()
 
 
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.eepi0pq.mongodb.net/?retryWrites=true&w=majority`;
 
-const uri = "mongodb+srv://toyWorld:oiPfrrdspwNZ6pRk@cluster0.eepi0pq.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -24,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
         const toyes = client.db('toyWorld').collection('gelary')
         const cars = client.db('toyWorld').collection('cars')
         const truks = client.db('toyWorld').collection('truks')
@@ -82,22 +85,34 @@ async function run() {
             if (req.query?.email) {
                 query = { name: req.query.email }
             }
-            
             const cursor = mytoyes.find(query).sort({ price: sort })
             const result = await cursor.toArray();
+            console.log(result)
             res.send(result)
         }
 
         )
-
-
-
-
-
         app.post('/mytoyes', async (req, res) => {
             const addedToyes = req.body
             const newToyes = await mytoyes.insertOne(addedToyes)
-            res.send(newToyes)
+            res.send(newToyes)                                                                             
+        })
+        app.put('/mytoyes/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {_id: new ObjectId(id)}
+            const data = req.body
+            const option = {upsert:true}
+            const updatedData = {
+                $set:{
+                    price:data.price,
+                    details:data.details,
+                    availbaleQuantity:data.availbaleQuantity,
+                    img:data.img
+                }
+            }
+          const result = await mytoyes.updateOne(filter,updatedData,option)
+         
+          res.send(result)
         })
         app.delete('/mytoyes/:id', async (req, res) => {
             const id = req.params.id
